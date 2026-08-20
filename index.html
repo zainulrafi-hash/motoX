@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotoXUniverse</title>
+<style>
+  :root{
+    --bg:#12151a; --panel:#1a1f27; --panel2:#20262f; --border:#2a3140;
+    --text:#e8ecf1; --text2:#8b95a5; --accent:#ff8a3d; --accent-dim:#3a2a1c;
+    --green:#4ade80; --amber:#fbbf24; --red:#f87171;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;}
+  #app{min-height:100vh;display:flex;flex-direction:column;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;}
+
+  /* Top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);background:var(--panel);}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em;}
+  .brand .mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#ff5f3d);display:flex;align-items:center;justify-content:center;font-size:14px;}
+  nav{display:flex;gap:4px;}
+  nav button{background:none;border:none;color:var(--text2);padding:8px 14px;border-radius:6px;font-size:13.5px;font-weight:600;}
+  nav button.active{color:var(--text);background:var(--panel2);}
+  nav button:hover{color:var(--text);}
+  .userbox{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2);}
+  .userbox button{background:none;border:1px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:6px;font-size:12.5px;}
+
+  main{flex:1;padding:26px 30px 60px;max-width:1180px;width:100%;margin:0 auto;}
+  h1{font-size:22px;margin:0 0 4px;}
+  h2{font-size:15px;margin:0 0 12px;color:var(--text);}
+  .sub{color:var(--text2);font-size:13.5px;margin:0 0 22px;}
+
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px;}
+  .grid{display:grid;gap:14px;}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-2{grid-template-columns:1fr 1fr;}
+  @media(max-width:800px){.grid-4{grid-template-columns:repeat(2,1fr);} .grid-2{grid-template-columns:1fr;}}
+
+  /* Dashboard */
+  .kpi{padding:16px;}
+  .kpi .num{font-size:26px;font-weight:700;font-family:var(--mono);}
+  .kpi .label{color:var(--text2);font-size:12.5px;margin-top:2px;}
+  .bike-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--panel2);}
+  .bike-row:hover{border-color:var(--accent);}
+  .bike-id{font-family:var(--mono);font-weight:700;font-size:14px;}
+  .bike-model{color:var(--text2);font-size:12.5px;}
+  .status-pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;}
+  .status-New{background:#2a3140;color:var(--text2);}
+  .status-Checklist{background:var(--accent-dim);color:var(--accent);}
+  .status-SKUs{background:#1c3a2c;color:var(--green);}
+  .progress{width:120px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+  .progress > div{height:100%;background:var(--accent);}
+
+  .btn{background:var(--accent);color:#1a1108;border:none;padding:9px 16px;border-radius:7px;font-weight:700;font-size:13.5px;}
+  .btn:hover{filter:brightness(1.08);}
+  .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border);}
+  .btn.small{padding:6px 11px;font-size:12.5px;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:600;}
+  .field{margin-bottom:14px;}
+  input[type=text],input[type=number],input[type=password],select{width:100%;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;color:var(--text2);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--border);}
+  td{padding:8px 10px;border-bottom:1px solid var(--border);}
+  tr:hover td{background:var(--panel2);}
+
+  .part-group{margin-bottom:18px;}
+  .part-group-title{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 6px;}
+  .part-row{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--border);}
+  .part-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);}
+  .part-name{flex:1;font-size:13.5px;}
+  .part-notes{flex:1.3;}
+  .part-notes input{width:100%;font-size:12.5px;padding:5px 8px;}
+
+  .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+  .login-card{width:340px;padding:32px;}
+  .login-card h1{text-align:center;margin-bottom:22px;}
+  .msg{font-size:12.5px;padding:8px 12px;border-radius:6px;margin-bottom:14px;}
+  .msg.error{background:#3a1c1c;color:var(--red);}
+  .msg.ok{background:#1c3a2c;color:var(--green);}
+
+  .cost-total{font-family:var(--mono);font-weight:700;}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+  .spacer{flex:1;}
+  .empty{text-align:center;color:var(--text2);padding:40px 0;font-size:13.5px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ══════════════════════════ CONFIG ══════════════════════════ */
+// Paste your Apps Script Web App URL here after deploying Code.gs
+const API_URL = "https://script.google.com/macros/s/AKfycbyiWVEriLymjevvSWqFz6nZ2eoe17KY4lRY3-hR90FxoIZAesBhW2KoEuzT-n9xXnpv/exec";
+
+/* ══════════════════════════ STATE ══════════════════════════ */
+const state = {
+  user: null, role: null,
+  page: "dashboard",
+  bikes: [], dashboard: [], parts: [],
+  activeBikeId: null,
+  checklist: [], skus: [],
+  loading: false, error: null
+};
+
+/* ══════════════════════════ API ══════════════════════════ */
+async function api(action, payload) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify(Object.assign({ action }, payload || {}))
+  });
+  return res.json();
+}
+
+/* ══════════════════════════ RENDER ROOT ══════════════════════════ */
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  if (!state.user) { app.appendChild(renderLogin()); return; }
+
+  const shell = el("div", { style: "display:flex;flex-direction:column;min-height:100vh;" });
+  shell.appendChild(renderTopbar());
+  const main = el("main");
+  main.appendChild(
+    state.page === "dashboard" ? renderDashboard() :
+    state.page === "ledger" ? renderLedger() :
+    state.page === "checklist" ? renderChecklist() :
+    state.page === "images" ? renderImages() :
+    state.page === "sku" ? renderSku() :
+    state.page === "settings" ? renderSettings() : el("div")
+  );
+  shell.appendChild(main);
+  app.appendChild(shell);
+}
+
+function el(tag, attrs, children) {
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    if (k === "style") e.style.cssText = attrs[k];
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  (children || []).forEach(c => e.appendChild(typeof c === "string" ? document.createTextNode(c) : c));
+  return e;
+}
+
+/* ══════════════════════════ LOGIN ══════════════════════════ */
+function renderLogin() {
+  const wrap = el("div", { class: "login-wrap" });
+  const card = el("div", { class: "card login-card" });
+  card.appendChild(el("h1", {}, ["🏍  MotoXUniverse"]));
+  const msgBox = el("div");
+  card.appendChild(msgBox);
+
+  const uField = el("div", { class: "field" }, [el("label", {}, ["Username"]), (function(){ const i=el("input",{type:"text",id:"lu"}); return i; })()]);
+  const pField = el("div", { class: "field" }, [el("label", {}, ["Password"]), (function(){ const i=el("input",{type:"password",id:"lp"}); return i; })()]);
+  card.appendChild(uField); card.appendChild(pField);
+
+  const btn = el("button", { class: "btn", style: "width:100%;", onclick: async () => {
+    const u = document.getElementById("lu").value.trim();
+    const p = document.getElementById("lp").value;
+    if (!u || !p) return;
+    btn.disabled = true; btn.textContent = "Logging in…";
+    const res = await api("login", { username: u, password: p });
+    btn.disabled = false; btn.textContent = "Log in";
+    if (res.success) {
+      state.user = u; state.role = res.role;
+      await loadBootstrap();
+      render();
+    } else {
+      msgBox.innerHTML = "";
+      msgBox.appendChild(el("div", { class: "msg error" }, [res.error || "Login failed"]));
+    }
+  } }, ["Log in"]);
+  card.appendChild(btn);
+  card.appendChild(el("p", { style: "font-size:11.5px;color:var(--text2);margin-top:14px;text-align:center;" },
+    ["First login on a fresh sheet auto-creates your admin account."]));
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/* ══════════════════════════ TOPBAR ══════════════════════════ */
+function renderTopbar() {
+  const bar = el("div", { class: "topbar" });
+  const brand = el("div", { class: "brand" }, [el("div", { class: "mark" }, ["🏍"]), el("span", {}, ["MotoX"])]);
+  bar.appendChild(brand);
+
+  const nav = el("nav");
+  const items = [["dashboard","Dashboard"],["ledger","Ledger"],["checklist","Checklist"],["images","Images"],["sku","SKU / Costing"],["settings","Settings"]];
+  items.forEach(([key,label]) => {
+    nav.appendChild(el("button", { class: state.page===key?"active":"", onclick: () => { state.page=key; render(); } }, [label]));
+  });
+  bar.appendChild(nav);
+
+  const userbox = el("div", { class: "userbox" }, [
+    el("span", {}, [state.user + " · " + state.role]),
+    el("button", { onclick: () => { state.user=null; render(); } }, ["Log out"])
+  ]);
+  bar.appendChild(userbox);
+  return bar;
+}
+
+/* ══════════════════════════ DATA LOADING ══════════════════════════ */
+async function loadBootstrap() {
+  const [boot, pm] = await Promise.all([api("bootstrap"), api("parts_master_read")]);
+  state.bikes = boot.bikes || [];
+  state.dashboard = boot.dashboard || [];
+  state.parts = pm.parts || [];
+}
+
+async function loadBikeData(bikeId) {
+  const [cl, sk] = await Promise.all([
+    api("checklist_read", { bikeId }),
+    api("sku_read", { bikeId })
+  ]);
+  state.checklist = cl.items || [];
+  state.skus = sk.skus || [];
+}
+
+/* ══════════════════════════ DASHBOARD ══════════════════════════ */
+function renderDashboard() {
+  const wrap = el("div");
+  wrap.appendChild(el("h1", {}, ["Dashboard"]));
+  wrap.appendChild(el("p", { class: "sub" }, ["Overview of every bike in inventory."]));
+
+  const totalBikes = state.dashboard.length;
+  const inProgress = state.dashboard.filter(b => b.status === "Checklist In Progress").length;
+  const skuDone = state.dashboard.filter(b => b.status === "SKUs Generated").length;
+  const totalValue = state.bikes.reduce((s,b) => s + (parseFloat(b.purchasePrice)||0), 0);
+
+  const kpis = el("div", { class: "grid grid-4", style: "margin-bottom:24px;" }, [
+    kpiCard(totalBikes, "Bikes in inventory"),
+    kpiCard(inProgress, "Checklist in progress"),
+    kpiCard(skuDone, "SKUs generated"),
+    kpiCard("$" + totalValue.toLocaleString(), "Total purchase value")
+  ]);
+  wrap.appendChild(kpis);
+
+  const listCard = el("div", { class: "card" });
+  listCard.appendChild(el("div", { class: "toolbar" }, [
+    el("h2", { style: "margin:0;" }, ["All Bikes"]),
+    el("div", { class: "spacer" }),
+    el("button", { class: "btn small", onclick: () => { state.page="ledger"; state.activeBikeId=null; render(); } }, ["+ Add Bike"])
+  ]));
+
+  if (state.dashboard.length === 0) {
+    listCard.appendChild(el("div", { class: "empty" }, ["No bikes yet. Add your first one in the Ledger."]));
+  } else {
+    state.dashboard.forEach(b => {
+      const pct = b.totalParts ? Math.round((b.checkedCount / b.totalParts) * 100) : 0;
+      const statusClass = b.status === "SKUs Generated" ? "status-SKUs" : b.status === "Checklist In Progress" ? "status-Checklist" : "status-New";
+      const row = el("div", { class: "bike-row", onclick: () => { state.activeBikeId = b.id; state.page = "checklist"; loadBikeData(b.id).then(render); } }, [
+        el("div", {}, [
+          el("div", { class: "bike-id" }, [b.label || b.id]),
+          el("div", { class: "bike-model" }, [b.bikeModel + " · $" + (parseFloat(b.purchasePrice)||0).toLocaleString()])
+        ]),
+        el("div", { style: "display:flex;align-items:center;gap:16px;" }, [
+          el("div", { class: "progress" }, [el("div", { style: "width:"+pct+"%;" })]),
+          el("span", { style: "font-size:12px;color:var(--text2);" }, [b.checkedCount + "/" + b.totalParts + " parts"]),
+          el("span", { class: "status-pill " + statusClass }, [b.status])
+        ])
+      ]);
+      listCard.appendChild(row);
+    });
+  }
+  wrap.appendChild(listCard);
+  return wrap;
+}
+
+function kpiCard(num, label) {
+  return el("div", { class: "card kpi" }, [el("div", { class: "num" }, [String(num)]), el("div", { class: "label" }, [label])]);
+}
+
+/* ══════════════════════════ LEDGER ══════════════════════════ */
+function renderLedger() {
+  const wrap = el("div");
+  wrap.appendChild(el("h1", {}, ["Purchase Ledger"]));
+  wrap.appendChild(el("p", { class: "sub" }, ["One record per bike purchased — this is the source of truth for SKU generation."]));
+
+  const card = el("div", { class: "card" });
+  const bike = state.bikes.find(b => b.id === state.activeBikeId) || {};
+  const fields = [
+    ["condition","Condition (U/N)","text"],
+    ["listingNumber","Listing Number","text"],
+    ["bikeModel","Bike Model","text"],
+    ["internalSerial","Internal Serial","text"],
+    ["purchasePrice","Purchase Price ($)","number"],
+    ["driveFolderId","Google Drive Folder ID","text"],
+    ["notes","Notes","text"]
+  ];
+  const grid = el("div", { class: "grid grid-2" });
+  const inputs = {};
+  fields.forEach(([key,label,type]) => {
+    const input = el("input", { type, id: "bf_"+key, value: bike[key] != null ? String(bike[key]) : "" });
+    inputs[key] = input;
+    grid.appendChild(el("div", { class: "field" }, [el("label", {}, [label]), input]));
+  });
+  card.appendChild(grid);
+
+  const saveBtn = el("button", { class: "btn", onclick: async () => {
+    const newBike = { id: state.activeBikeId };
+    fields.forEach(([key]) => newBike[key] = inputs[key].value);
+    saveBtn.disabled = true; saveBtn.textContent = "Saving…";
+    const res = await api("ledger_write", { bike: newBike });
+    await loadBootstrap();
+    state.activeBikeId = res.id;
+    saveBtn.disabled = false; saveBtn.textContent = "Save Bike";
+    render();
+  } }, ["Save Bike"]);
+  card.appendChild(saveBtn);
+  wrap.appendChild(card);
+
+  wrap.appendChild(el("h2", { style: "margin-top:26px;" }, ["Existing Bikes"]));
+  const table = el("table");
+  table.appendChild(el("tr", {}, ["Cond.","Listing #","Model","Serial","Price",""].map(h => el("th", {}, [h]))));
+  state.bikes.forEach(b => {
+    table.appendChild(el("tr", {}, [
+      el("td", {}, [b.condition||""]), el("td", {}, [String(b.listingNumber||"")]),
+      el("td", {}, [b.bikeModel||""]), el("td", {}, [String(b.internalSerial||"")]),
+      el("td", {}, ["$"+(parseFloat(b.purchasePrice)||0).toLocaleString()]),
+      el("td", {}, [el("button", { class: "btn secondary small", onclick: () => { state.activeBikeId = b.id; render(); } }, ["Edit"])])
+    ]));
+  });
+  wrap.appendChild(table);
+  return wrap;
+}
+
+/* ══════════════════════════ CHECKLIST ══════════════════════════ */
+function renderChecklist() {
+  const wrap = el("div");
+  const bike = state.bikes.find(b => b.id === state.activeBikeId);
+  wrap.appendChild(el("h1", {}, ["Parts Checklist"]));
+  if (!bike) {
+    wrap.appendChild(el("p", { class: "sub" }, ["Select a bike from the Dashboard or Ledger first."]));
+    return wrap;
+  }
+  wrap.appendChild(el("p", { class: "sub" }, [(bike.bikeModel||"") + " · " + bike.internalSerial + " — tick every part present, add notes as needed."]));
+
+  const checkedMap = {};
+  state.checklist.forEach(c => checkedMap[c.partNum] = { present: c.present===true||c.present==="TRUE", notes: c.notes||"" });
+
+  const card = el("div", { class: "card" });
+  const categories = {};
+  state.parts.forEach(p => { (categories[p.category] = categories[p.category] || []).push(p); });
+  const catNames = { EX:"Exhaust", EN:"Engine", SS:"Suspension", WL:"Wheels", FR:"Frame", OS:"Outer / External Systems" };
+
+  const rowState = {};
+  Object.keys(categories).forEach(cat => {
+    card.appendChild(el("div", { class: "part-group-title" }, [catNames[cat] || cat]));
+    categories[cat].forEach(p => {
+      const existing = checkedMap[p.num] || { present: false, notes: "" };
+      const cb = el("input", { type: "checkbox" });
+      cb.checked = existing.present;
+      const notesInput = el("input", { type: "text", placeholder: "Notes…", value: existing.notes });
+      rowState[p.num] = { cb, notesInput };
+      card.appendChild(el("div", { class: "part-row" }, [
+        cb,
+        el("span", { class: "part-name" }, [p.num + " — " + p.name]),
+        el("span", { class: "part-notes" }, [notesInput])
+      ]));
+    });
+  });
+
+  const saveBtn = el("button", { class: "btn", style: "margin-top:16px;", onclick: async () => {
+    const items = Object.keys(rowState).map(num => ({ partNum: num, present: rowState[num].cb.checked, notes: rowState[num].notesInput.value }))
+      .filter(it => it.present || it.notes);
+    saveBtn.disabled = true; saveBtn.textContent = "Saving…";
+    await api("checklist_write", { bikeId: bike.id, items });
+    await loadBootstrap();
+    saveBtn.disabled = false; saveBtn.textContent = "Save Checklist";
+    render();
+  } }, ["Save Checklist"]);
+  wrap.appendChild(card);
+  wrap.appendChild(saveBtn);
+  return wrap;
+}
+
+/* ══════════════════════════ IMAGES ══════════════════════════ */
+function renderImages() {
+  const wrap = el("div");
+  const bike = state.bikes.find(b => b.id === state.activeBikeId);
+  wrap.appendChild(el("h1", {}, ["Part Images"]));
+  if (!bike) { wrap.appendChild(el("p", { class: "sub" }, ["Select a bike first."])); return wrap; }
+  wrap.appendChild(el("p", { class: "sub" }, ["Images load from the bike's Google Drive folder. Assign each photo to a part to file it into a subfolder."]));
+
+  const card = el("div", { class: "card" });
+  const grid = el("div", { class: "grid", style: "grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;" });
+  card.appendChild(el("div", { class: "toolbar" }, [
+    el("button", { class: "btn small", onclick: async () => {
+      grid.innerHTML = "Loading…";
+      const res = await api("drive_list_images", { driveFolderId: bike.driveFolderId });
+      grid.innerHTML = "";
+      if (!res.success) { grid.appendChild(el("div", { class: "msg error" }, [res.error])); return; }
+      if (!res.images.length) { grid.appendChild(el("div", { class: "empty" }, ["No unassigned images in this folder."])); return; }
+      res.images.forEach(img => {
+        const partSelect = el("select");
+        partSelect.appendChild(el("option", { value: "" }, ["Assign to part…"]));
+        state.parts.forEach(p => partSelect.appendChild(el("option", { value: p.num }, [p.num + " — " + p.name])));
+        const cell = el("div", { class: "card", style: "padding:8px;" }, [
+          el("img", { src: img.url, style: "width:100%;height:90px;object-fit:cover;border-radius:6px;margin-bottom:6px;" }),
+          el("div", { style: "font-size:11px;color:var(--text2);margin-bottom:6px;word-break:break-all;" }, [img.name]),
+          partSelect,
+          el("button", { class: "btn small secondary", style: "width:100%;margin-top:6px;", onclick: async () => {
+            if (!partSelect.value) return;
+            const part = state.parts.find(p => p.num === partSelect.value);
+            await api("drive_assign_image", { driveFolderId: bike.driveFolderId, fileId: img.id, partNum: part.num, partName: part.name });
+            cell.remove();
+          } }, ["Assign"])
+        ]);
+        grid.appendChild(cell);
+      });
+    } }, ["Load Images from Drive"])
+  ]));
+  card.appendChild(grid);
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/* ══════════════════════════ SKU / COSTING ══════════════════════════ */
+function renderSku() {
+  const wrap = el("div");
+  const bike = state.bikes.find(b => b.id === state.activeBikeId);
+  wrap.appendChild(el("h1", {}, ["SKU Generator & Costing"]));
+  if (!bike) { wrap.appendChild(el("p", { class: "sub" }, ["Select a bike first."])); return wrap; }
+  wrap.appendChild(el("p", { class: "sub" }, ["Generates one SKU per checked part, with pro-rata cost allocated from the purchase price."]));
+
+  const presentParts = state.checklist.filter(c => c.present===true || c.present==="TRUE").map(c => c.partNum);
+
+  const toolbar = el("div", { class: "toolbar" }, [
+    el("button", { class: "btn", onclick: async () => {
+      await api("sku_generate", { bikeId: bike.id, partNums: presentParts });
+      await loadBikeData(bike.id);
+      render();
+    } }, ["Generate SKUs from Checklist"]),
+    el("button", { class: "btn secondary", onclick: async () => {
+      await api("costing_refresh");
+      await loadBikeData(bike.id);
+      render();
+    } }, ["↻ Costing Refresh"])
+  ]);
+  wrap.appendChild(toolbar);
+
+  const card = el("div", { class: "card" });
+  if (!state.skus.length) {
+    card.appendChild(el("div", { class: "empty" }, ["No SKUs yet. Tick parts in the Checklist, then Generate SKUs."]));
+  } else {
+    const table = el("table");
+    table.appendChild(el("tr", {}, ["SKU","Part","Cost"].map(h => el("th", {}, [h]))));
+    let total = 0;
+    state.skus.forEach(s => {
+      total += parseFloat(s.cost)||0;
+      const part = state.parts.find(p => p.num === s.partNum);
+      table.appendChild(el("tr", {}, [
+        el("td", { style:"font-family:var(--mono);" }, [s.sku]),
+        el("td", {}, [part ? part.name : s.partNum]),
+        el("td", { class: "cost-total" }, ["$"+(parseFloat(s.cost)||0).toLocaleString()])
+      ]));
+    });
+    card.appendChild(table);
+    card.appendChild(el("div", { style: "margin-top:10px;font-size:13px;color:var(--text2);" }, [
+      "Allocated: $" + total.toLocaleString() + " / Purchase Price: $" + (parseFloat(bike.purchasePrice)||0).toLocaleString()
+    ]));
+  }
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/* ══════════════════════════ SETTINGS / PARTS MASTER ══════════════════════════ */
+function renderSettings() {
+  const wrap = el("div");
+  wrap.appendChild(el("h1", {}, ["Settings"]));
+  wrap.appendChild(el("p", { class: "sub" }, ["Edit the master parts list and retail ratios used for cost allocation."]));
+
+  const card = el("div", { class: "card" });
+  card.appendChild(el("p", { style: "font-size:12.5px;color:var(--text2);margin-top:0;" },
+    ["All 119 parts currently start with an equal placeholder ratio of 1. Edit the ratio to reflect real relative retail value — higher ratio = higher share of the purchase price allocated to that part."]));
+
+  const table = el("table");
+  table.appendChild(el("tr", {}, ["Code","Name","Category","Ratio"].map(h => el("th", {}, [h]))));
+  const ratioInputs = {};
+  state.parts.forEach(p => {
+    const input = el("input", { type: "number", value: String(p.ratio||1), style: "width:80px;" });
+    ratioInputs[p.num] = input;
+    table.appendChild(el("tr", {}, [
+      el("td", { style:"font-family:var(--mono);" }, [p.num]), el("td", {}, [p.name]), el("td", {}, [p.category]),
+      el("td", {}, [input])
+    ]));
+  });
+  card.appendChild(table);
+
+  const saveBtn = el("button", { class: "btn", style: "margin-top:14px;", onclick: async () => {
+    const parts = state.parts.map(p => ({ num: p.num, name: p.name, category: p.category, ratio: parseFloat(ratioInputs[p.num].value)||1 }));
+    saveBtn.disabled = true; saveBtn.textContent = "Saving…";
+    await api("parts_master_write", { parts });
+    await api("costing_refresh");
+    await loadBootstrap();
+    saveBtn.disabled = false; saveBtn.textContent = "Save Ratios & Refresh Costing";
+    render();
+  } }, ["Save Ratios & Refresh Costing"]);
+  wrap.appendChild(card);
+  wrap.appendChild(saveBtn);
+  return wrap;
+}
+
+/* ══════════════════════════ INIT ══════════════════════════ */
+render();
+</script>
+</body>
+</html>
