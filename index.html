@@ -1953,16 +1953,14 @@
           const checklistEntry = checklistItems.find(c=>String(c.partNum)===String(sf.partNum));
           const location = mergedLocs[String(sf.partNum)]||"";
           const partNotes = checklistEntry?.notes||"";
-          // Brekke SKU format: [condition][listingNum]-[bikeModel]-[internalSerial]-[categoryCode]-[partNum]
-          // COGS deferred — not included in SKU yet
-          const conditionCode = (selectedBike.condition||"U").toUpperCase();
-          const listingN = selectedBike.listingNum||"";
-          const bikeModel = selectedBike.bikeModel||"";
-          const intSerial = selectedBike.internalSerial||"";
-          const partCode = String(sf.partNum); // e.g. EX-01
+          // SKU format: [internalSerial/bikeCode]-[partCode]-[locationCode]-[cogs]
+          // e.g. B0001-EN-01-LL-045
+          const bikeCode = selectedBike.internalSerial||"";
+          const partCode = String(sf.partNum); // e.g. EN-01
+          const locCode = (location||"XX").toUpperCase();
           const cogsStr = String(cogs).padStart(3,"0");
-          const sku=`${conditionCode}${listingN}-${bikeModel}-${intSerial}-${partCode}-${cogsStr}`.replace(/\s+/g,"-").trim();
-          return {partNum:sf.partNum,partName:sf.cleanName,folderName:sf.name,cogs,location:"",sku,driveFolderId:sf.id||"",group:getGroupForPart(sf.partNum),notes:partNotes};
+          const sku=`${bikeCode}-${partCode}-${locCode}-${cogsStr}`.replace(/\s+/g,"-").trim();
+          return {partNum:sf.partNum,partName:sf.cleanName,folderName:sf.name,cogs,location,sku,driveFolderId:sf.id||"",group:getGroupForPart(sf.partNum),notes:partNotes};
         });
 
         // Penny reconciliation (only when purchasePrice > 0)
@@ -1972,9 +1970,9 @@
           if(diff!==0&&items.length>0) {
             const sorted=[...items].sort((a,b)=>getRatio(b.partNum)-getRatio(a.partNum));
             sorted[0].cogs+=Math.round(diff);
-            const condC=(selectedBike.condition||"U").toUpperCase();
             const cogsStr=String(sorted[0].cogs).padStart(3,"0");
-            sorted[0].sku=`${condC}${selectedBike.listingNum||""}-${selectedBike.bikeModel||""}-${selectedBike.internalSerial||""}-${String(sorted[0].partNum)}-${cogsStr}`.replace(/\s+/g,"-").trim();
+            const locCode=(sorted[0].location||"XX").toUpperCase();
+            sorted[0].sku=`${selectedBike.internalSerial||""}-${String(sorted[0].partNum)}-${locCode}-${cogsStr}`.replace(/\s+/g,"-").trim();
           }
         }
         setGeneratedSkus(items);
@@ -2011,12 +2009,10 @@
         const updated=savedSkus.map(s=>{
           const ratio=getRatio(s.partNum,selectedBike.id);
           const newCogs=Math.max(1,Math.round(totalRatio>0?(ratio/totalRatio)*purchasePrice:1));
-          const conditionCode=(selectedBike.condition||"U").toUpperCase();
-          const listingN=selectedBike.listingNum||"";
-          const bikeModel=selectedBike.bikeModel||"";
           const intSerial=selectedBike.internalSerial||"";
           const cogsStr=String(newCogs).padStart(3,"0");
-          const newSku=`${conditionCode}${listingN}-${bikeModel}-${intSerial}-${String(s.partNum)}-${cogsStr}`.replace(/\s+/g,"-").trim();
+          const locCode=(s.shelfLocation||"XX").toUpperCase();
+          const newSku=`${intSerial}-${String(s.partNum)}-${locCode}-${cogsStr}`.replace(/\s+/g,"-").trim();
           // Carry notes from checklist if not already on saved SKU
           const checklistEntry = checklistItems.find(c=>c.partNum===s.partNum);
           const notes = s.notes||(checklistEntry?.notes||"");
