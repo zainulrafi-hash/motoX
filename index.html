@@ -224,6 +224,12 @@
       {num:"FR-04",name:"Skid Plate / Bash Plate",ratio:1,category:"FR"},
     ];
 
+    // Pre-filled data for the Settings > Bulk Folder Rename tool — this bike's
+    // resolved old-code -> new-code mapping. Format: "folderId | New Name" per line.
+    // Safe to clear and reuse for future migrations.
+    const BULK_RENAME_PRESET = "1BRZPgwcClIpATDNOkQQE_SmQ05C09HQ6 | EN-15 - Crankshaft Gear\n1Wxd3_CCoAK8gTneZWpqsEH4We6U94NL8 | EN-44 - Stator\n1vUi_LZjkLNNdc00M8pBRKRUEBxS95Ptn | EN-45 - Flywheel / Rotor\n1zn4FgRsFIszO5lXSWGdbPsoHI0v5ysRA | EN-46 - Stator Cover\n1Xp0gwd1QgdJHV1eie6PNy6BVbZe4YhHK | EN-37 - Transmission Assembly (complete)\n12vzdbrsEeZ35z2Do7L3V0-ELXTTE0SZ6 | EN-11 - Power Valve Assembly (2T)\n1gOlGDiApspy6-jfmoz6J89-S6XlZ-0pk | EN-23 - Starting Gears\n1VSvqNVKhXNu-EgObpGrgZzi5ku_Mzdha | EN-40 - Shift Forks\n1z1TeU1NCtBNBzTY-cHA1Y78oyiyM0hAy | EN-41 - Shift Drum\n1ZvP9efWdM0C-LG9O62KSEAlD0NdN4Cn5 | EN-42 - Shift Shaft\n1r11bYD-S-bh6XfmfvOToDGqC7JfQPDWr | EN-26 - Outer Clutch Cover\n1NPxn8vIGICtG8t5WTKZGtjzPoFERXud3 | EN-28 - Clutch Basket\n12e6g482DLaDBBmZ9MvzzgUzinUK_Atmy | EN-29 - Clutch Hub\n1m4bhh-drZhck3ZP87W-chDuYXNsAEDQf | EN-30 - Pressure Plate\n1fsrWUBiGFu1OdkPmTgATvew97qwADF8_ | OS-92 - Intake Manifold Boot\n1NmLYreX412LZ9ZFH8nJviJz4MmpFsDZ9 | EN-32 - Clutch Springs / Push Rod\n1VkER7A5cvrq-tV5YmvxpU7g-DipulWR4 | EN-10 - Reed Valve / Cage (2T)\n1dyhtCkQhexM4fBGKk-YKhn9icVqso6Y3 | EN-22 - Idler Gear\n1hMn5oCv7pxAfzpzyD0jx6KNsbf7l2yAY | EX-01 - Header / Head Pipe\n1wf4I6kjZuy534M6w2zLMXL-N8OHPG_Qp | EX-02 - Muffler / Silencer\n1S8oUsDXOJf8h8wXuMSblFEkMC7ewfCYn | OS-38 - Swingarm\n1XsrQiaqcKmNyAqWkNyDh71yqyqjJe_Ww | EN-50 - Wiring Harness\n1YbvCIdUvW-jM9GCSwTSCD2DHiYDZ4Fmc | EN-47 - ECU / CDI\n1jDNZx7Y3AQZcYzHFXLhblDnQqAfPW7pI | EN-48 - Ignition Coil\n1VnmPtZ-Q4dMECGkzKyuc9TvZIInnE4P0 | OS-15 - Handlebars\n1Wx4fKz72UHWD6_0OfHHhNBIeeYW9uZ1Y | OS-20 - Throttle Assembly\n197lxow4IXmPrCaH2McAqPqXkYp_H74fE | OS-22 - Clutch Lever & Perch\n1fAKqHSQAJ2MSevOiFY0t_ZPpwk97ruxV | OS-27 - Front Brake Master Cylinder\n1VVKS05PAyulEpzOLZ6bo7P-gQyWVUUZa | OS-34 - Rear Brake Master Cylinder\n1hKoNYNu0eG9NOuADpD5bDVBhiSufD9o- | OS-28 - Front Brake Caliper\n18qqhXv4yT3cFOxorC04dMYzQQ_4WWia_ | EN-36 - Clutch Cable\n1oYF9PQiGfABXCOY3mygLn-HecLPHWtlv | OS-31 - Rear Brake Caliper\n1skq-Z4uw9v0gG1oEvk8Rrrxj514Rswly | OS-29 - Front Brake Line / Hose\n1z050KcR2ytnTYng1TB7gJyd25gId-oX5 | OS-32 - Rear Brake Line / Hose\n1S6hiGqMos6y5Qk8hQhOVC1Wcz1F8p0_5 | OS-30 - Front Caliper Hanger / Bracket\n1vnWOcN-9chmD17dyeG6KorQfmkB-_QuK | EN-43 - Shift Lever\n1_ySfyk7unnz48f3LnO8FG6__SvSKORcU | OS-33 - Rear Caliper Hanger / Bracket\n1WF2cKQjgXuHc8MusTqEycPSlZVc8tdeE | OS-47 - Footpegs\n1P8niQEfW8XdUM2_H06hw1mWZWsENaiuH | EN-24 - Kickstart Lever\n1EHDye5NyPANPeO4B-d40iW38mZo0Xxek | OS-09 - Fuel Petcock\n1MBlrwmJDEQzDqWk_SU6A2oV4eoXp2Jv7 | OS-07 - Fuel Tank\n1gMX18py5LktnSGSrqrDzZjrkRt2ADcOa | OS-01 - Radiator (Left)\n18660gH6cjHKyl7P6tYjJAdoifUHObfOF | OS-02 - Radiator (Right)\n1CAT35ofQgn8Vz-K8xTtP0_-H6mEM0z6N | OS-05 - Radiator Louvers\n1X4lpq2ZdAY5-sZ4n_5_KmylP8hf4xZyF | OS-13 - Airbox\n1gw7OEE7QVcwAELJ327x_88pfROJFEgy2 | OS-11 - Carburetor\n1idRt_IF3IRHeiLg4K7ytpRgBT8JIAF4y | OS-56 - Seat\n1lOKSMXCmgSyGKsEayHr3-VrLI8lryofM | SS-02 - Fork Guards\n1XEZxudhqYE8aREOLYBNMrt3Q-wx5L6XG | OS-45 - Chain Slider\n1PuBcujm2rSopJY0JJtgVpdHkKw52YnDb | OS-43 - Chain Guide (lower / front)\n1PlZh_SWrDx-OIifp5lGNqTkAJG0xhJH9 | WL-08 - Front Axle\n1JUITYdRhzt8lxRFzdQKvl_1UFfH0hLIV | WL-13 - Rear Axle\n19_PVAhmXJDi4zOkyccVYRBIOul3ZjzVu | OS-39 - Swingarm / Pivot Bolt\n1k1AJP-zXgHZkvzbYtum_yLVEge_f982Y | SS-03 - Triple Clamps / Steering Stem\n1BR5Qt391AsMc11Ashs3bMfvNW3K0wP-H | OS-17 - Handlebar Risers\n1Wb7bwxv8ZIQ2PW9r-qs4LkTzinR39aa1 | OS-93 - Mud Flap\n1BRM3PhJuxUedA6GRbdMya9TbGJ3HVr3F | OS-50 - Plastic Kit (full set)\n1TwJGQBkwyc4yOoqC6On4HwuCZUITXGin | OS-08 - Gas Cap\n1oBYbumnOAo9AdQh3iuQO5rfa_bHYgYd1 | OS-58 - Hardware / Bolt Kit — Complete Bike\n19lyYS7Yln9vtAX6SFx6Pjlh86hDvblqb | OS-06 - Water Pump Cover\n1a4RGBLK_7vleESDhtZvWINye7pDxLHJW | EN-35 - Clutch Slave Cylinder\n1Q6yM6dnP-_HiCz3vzxnOf206iYdbo8ZU | FR-03 - Frame Guards\n1dO2MovHphpdiycjpl5Mt-3v7ikVGBi2g | EX-04 - Exhaust Cover (Aftermarket)\n1EbwfJTFZsGeEcpAVVR0VuDbYlfNSCKWu | EN-12 - Power Valve Lever\n1wujHmhChhHtje97qfjQ2M10DfPRy43tf | EN-13 - Power Valve Regulator / Servo\n1gTzH4Kdq81OH12Iwvuw_4p8PVoUJz5M_ | OS-91 - Rear Airbox Filter Fender\n1gNJh8AtiPBn2qzuOfsqWQF0S7066NNVY | WL-01 - Front Wheel (complete)\n1pFPtqM5sLdlIIdHYCu1WivPfx-MMFQHG | WL-14 - Rear Wheel (complete)\n1pEIGblP88csvKPTMXg8sIonFR-OYovwZ | WL-07 - Front Rotor\n1XXxlotgKjqNTO91r1muprZTiG4Nbm-7z | WL-12 - Rear Rotor";
+
+
     // ─── HELPERS ──────────────────────────────────────────────────────────────
     const fmt$ = v => v != null && v !== "" ? `$${Number(v).toLocaleString("en-US", { minimumFractionDigits: 0 })}` : "—";
 
@@ -2381,6 +2387,29 @@
       const [newUser, setNewUser]           = useState({ name:"", email:"", password:"", role:"staff" });
       const [showAdd, setShowAdd]           = useState(false);
 
+      // Bulk Folder Rename tool — paste "folderId | New Name" lines, one per row
+      const [bulkRenameText, setBulkRenameText] = useState(BULK_RENAME_PRESET);
+      const [bulkRenameResults, setBulkRenameResults] = useState(null);
+      const [bulkRenaming, setBulkRenaming] = useState(false);
+
+      const runBulkRename = async () => {
+        const lines = bulkRenameText.split("\n").map(l=>l.trim()).filter(Boolean);
+        const renames = lines.map(l => {
+          const [folderId, ...rest] = l.split("|");
+          return { folderId: (folderId||"").trim(), newName: rest.join("|").trim() };
+        }).filter(r => r.folderId && r.newName);
+        if (renames.length === 0) { flash("⚠ No valid rows found — use \"folderId | New Name\" per line"); return; }
+        setBulkRenaming(true); setBulkRenameResults(null);
+        try {
+          const res = await callApi({ action:"drive_bulk_rename", renames });
+          setBulkRenameResults(res.results || []);
+          const okCount = (res.results||[]).filter(r=>r.success).length;
+          const failCount = (res.results||[]).length - okCount;
+          flash(failCount===0 ? `✓ Renamed ${okCount} folder${okCount!==1?"s":""}` : `⚠ ${okCount} renamed, ${failCount} failed — see results below`);
+        } catch(e) { flash("⚠ Bulk rename failed: "+e.message); }
+        setBulkRenaming(false);
+      };
+
       useEffect(()=>{
         if(activeTab==="users") {
           setLoadingUsers(true);
@@ -2424,7 +2453,7 @@
 
           {/* Tabs */}
           <div style={{ display:"flex", gap:2, marginBottom:20 }}>
-            {[["changelog","Changelog"],["config","Configuration"],["users","User Management"]].map(([id,label])=>(
+            {[["changelog","Changelog"],["config","Configuration"],["users","User Management"],["bulkrename","Bulk Folder Rename"]].map(([id,label])=>(
               <button key={id} onClick={()=>setActiveTab(id)} style={{ ...btn, background:activeTab===id?C.text:C.white, color:activeTab===id?"#fff":C.text2, border:`1px solid ${C.border}`, padding:"8px 18px" }}>{label}</button>
             ))}
           </div>
@@ -2531,6 +2560,55 @@
                   </table>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Bulk Folder Rename tab */}
+          {activeTab==="bulkrename"&&(
+            <div style={{ ...card, padding:24 }}>
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:C.text, marginBottom:4 }}>Bulk Folder Rename</div>
+                <div style={{ fontSize:12, color:C.text2 }}>
+                  Renames Drive part-folders directly by ID — useful after changing the parts_master list, when
+                  existing folders still use old codes. One row per folder: <code style={{ fontFamily:C.mono, background:C.bg, padding:"1px 5px", borderRadius:3 }}>folderId | New Name</code>.
+                  Pre-filled below with the resolved mapping for your existing folders — clear it and paste your own for future migrations.
+                </div>
+              </div>
+              <textarea
+                value={bulkRenameText}
+                onChange={e=>setBulkRenameText(e.target.value)}
+                rows={12}
+                style={{ ...inp, width:"100%", fontFamily:C.mono, fontSize:11.5, lineHeight:1.6, resize:"vertical" }}
+                placeholder="1AbCdEfGhIjKlMnOp... | EN-15 - Crankshaft Gear"
+              />
+              <div style={{ display:"flex", gap:10, marginTop:12, alignItems:"center" }}>
+                <button onClick={runBulkRename} disabled={bulkRenaming} style={{ ...btn, background:C.text, color:"#fff" }}>
+                  {bulkRenaming?Ic.spin:Ic.check} {bulkRenaming?"Renaming…":`Rename ${bulkRenameText.split("\n").filter(l=>l.trim()).length} Folders`}
+                </button>
+                <button onClick={()=>{ setBulkRenameText(""); setBulkRenameResults(null); }} style={{ ...btn, background:C.bg, color:C.text2, border:`1px solid ${C.border}` }}>Clear</button>
+              </div>
+
+              {bulkRenameResults && (
+                <div style={{ marginTop:20, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:C.text, marginBottom:8 }}>
+                    Results — {bulkRenameResults.filter(r=>r.success).length} succeeded, {bulkRenameResults.filter(r=>!r.success).length} failed
+                  </div>
+                  <div style={{ maxHeight:300, overflowY:"auto" }}>
+                    {bulkRenameResults.map((r,i)=>(
+                      <div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"5px 0", borderBottom:`1px solid ${C.border}`, fontSize:11.5 }}>
+                        <span style={{ color:r.success?C.accent:C.red, flexShrink:0 }}>{r.success?"✓":"✗"}</span>
+                        {r.success ? (
+                          <span style={{ color:C.text2 }}>
+                            <span style={{ fontFamily:C.mono, color:C.text3 }}>{r.oldName}</span> → <span style={{ color:C.text, fontWeight:600 }}>{r.newName}</span>
+                          </span>
+                        ) : (
+                          <span style={{ color:C.red }}>{r.folderId} — {r.error}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
